@@ -1,0 +1,34 @@
+{
+    "400": {
+        "error": "Bad Request",
+        "message": "The server cannot process the request due to something that is perceived to be a client error."
+    },
+    "401": {
+        "error": "Unauthorized",
+        "message": "The requested resource requires an authentication."
+    },
+    "403": {
+        "error": "Access Denied",
+        "message": "The requested resource requires an authentication."
+    },
+    "404": {
+        "error": "Resource not found",
+        "message": "The requested resource could not be found but may be available again in the future."
+    },
+    "500": {
+        "error": "Webservice currently unavailable",
+        "message": "An unexpected condition was encountered."
+    },
+    "501": {
+        "error": "Not Implemented",
+        "message": "The Webserver cannot recognize the request method."
+    },
+    "502": {
+        "error": "Webservice currently unavailable",
+        "message": "We've got some trouble with our backend upstream cluster.\nOur service team has been dispatched to bring it back online."
+    },
+    "503": {
+        "error": "Webservice currently unavailable",
+        "message": "We've got some trouble with our backend upstream cluster.\nOur service team has been dispatched to bring it back online."
+    }
+}

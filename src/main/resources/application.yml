@@ -1,0 +1,9 @@
+server:
+  port: 8080
+spring:
+  servlet:
+    multipart:
+      max-file-size: "64MB"
+      max-request-size: "64MB"
+
+# Remember to update Max File Size and Request Size in NGINX Static File Server Config as well

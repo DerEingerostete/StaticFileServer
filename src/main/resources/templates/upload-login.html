@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="author" content="https://github.com/PrerakMathur20">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<script src="/assets/js/upload-login.js" type="application/javascript"></script>
+		<script src="/assets/js/lib/notiflix-report-aio-3.2.5.min.js"></script>
+
+		<link rel="stylesheet" href="/assets/css/upload-login.css">
+		<title>Upload - Login</title>
+	</head>
+
+	<body onload="checkLoad()">
+		<div class="login">
+			<div class="login_title">
+				<span>Login to access upload</span>
+			</div>
+			<div class="login_fields">
+				<form action="#" th:action="@{/upload}" th:object="${form}" method="post">
+					<div class="login_fields__user">
+						<div class="icon">
+							<img src="/assets/images/user_icon_copy.png" alt="User Icon"/>
+						</div>
+						<label for="username"></label>
+						<input placeholder="Username" name="username" th:field="*{username}" type="text" id="username" required>
+						<div class="validation">
+							<img src="/assets/images/tick.png" alt="Tick"/>
+						</div>
+					</div>
+					<div class="login_fields__password">
+						<div class="icon">
+							<img src="/assets/images/lock_icon_copy.png" alt="Lock Icon"/>
+						</div>
+						<label for="password"></label>
+						<input placeholder="Password" name="password" type="password" th:field="*{password}" id="password" required>
+						<div class="validation">
+							<img src="/assets/images/tick.png" alt="Tick"/>
+						</div>
+					</div>
+					<div class="login_fields__submit">
+						<input name="submit" type="submit" value="Log In">
+					</div>
+				</form>
+			</div>
+		</div>
+	</body>
+
+	<script th:inline="javascript">
+        /*<![CDATA[*/
+
+        function checkLoad() {
+            const failed = /*[[${failed}]]*/ false;
+            if (failed) {
+                Notiflix.Report.init({
+                    backgroundColor: '#4b4c53',
+                    backOverlayColor: 'rgba(0,0,0,0.5)',
+                    failure: {
+                        svgColor: '#b1352c',
+                        buttonBackground: '#b1352c',
+                        buttonColor: '#d5d2d2',
+                        titleColor: '#b3b3b3',
+                        messageColor: '#b9afaf'
+                    }
+                });
+
+                Notiflix.Report.failure('Login failed',
+					'Invalid username or password.',
+					'Okay'
+				);
+            }
+        }
+
+        /*]]>*/
+	</script>
+</html>
