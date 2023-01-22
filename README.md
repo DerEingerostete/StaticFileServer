@@ -1,6 +1,4 @@
-<div style="text-align: center;">
-  [![CrazyEnvoys](https://github.com/DerEingerostete/StaticFileServer/blob/assets/StaticFileServer.png)](https://github.com/DerEingerostete/StaticFileServer)
-</div>
+[![StaticFileServer ](https://github.com/DerEingerostete/StaticFileServer/blob/assets/StaticFileServer.png)](https://github.com/DerEingerostete/StaticFileServer)
 
 ## A Spring Boot application
 StaticFileServer is what the name says: A static file server but with some more features.
