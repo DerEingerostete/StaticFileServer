@@ -11,6 +11,7 @@ package de.dereingerostete.sfs.upload;
 
 import de.dereingerostete.sfs.StaticFileServerApplication;
 import de.dereingerostete.sfs.controller.DownloadController;
+import de.dereingerostete.sfs.util.FileDetailsUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import org.apache.commons.io.FileUtils;
@@ -43,6 +44,7 @@ public class UploadProcess {
 	private final @NotNull Map<Long, File> chunks;
 	private @Nullable File resultFile;
 	private long totalLength;
+	private boolean closed;
 
 	static {
 		RANDOM = new Random();
@@ -68,15 +70,23 @@ public class UploadProcess {
 	}
 
 	public void handleSingle(@NotNull MultipartFile file) throws IOException {
+		if (closed) throw new IOException("Upload is closed");
 		if (resultFile == null) throw new IOException("Result file is not set");
 		InputStream inputStream = file.getInputStream();
 		FileUtils.copyInputStreamToFile(inputStream, resultFile);
 	}
 
 	public void nextChunk(@NotNull HttpServletRequest request, byte[] data) throws IOException {
+		if (closed) throw new IOException("Upload is closed");
 		if (totalLength == -1) totalLength = Long.parseLong(request.getHeader("Upload-Length"));
 		if (resultFile == null) {
 			String fileName = request.getHeader("Upload-Name");
+			if (FileDetailsUtils.isIllegalFile(fileName)) {
+				LOGGER.warn("Next upload chunk contains a illegal file name '" + fileName + "'");
+				close();
+				throw new IOException("Illegal filename");
+			}
+
 			resultFile = new File(DownloadController.DOWNLOAD_DIRECTORY, fileName);
 			LOGGER.info("Set filename of chunked upload with id '" + id + "' to '" + fileName + "'");
 		}
@@ -98,6 +108,7 @@ public class UploadProcess {
 
 	@NotNull
 	public File combineChunks() throws IOException {
+		if (closed) throw new IOException("Upload is closed");
 		LOGGER.info("Combining " + chunks.size() + " chunks");
 		long startTime = System.currentTimeMillis();
 
@@ -119,6 +130,7 @@ public class UploadProcess {
 	}
 
 	public boolean revert() {
+		if (closed) return false;
 		if (resultFile != null) {
 			LOGGER.info("Deleting file: " + resultFile.getName());
 			return !resultFile.exists() || FileUtils.deleteQuietly(resultFile);
@@ -135,6 +147,7 @@ public class UploadProcess {
 		String fileName = resultFile == null ? "null" : resultFile.getName();
 		LOGGER.info("Closing upload process with id '" + id + "' and filename '" + fileName + "'");
 		deleteTempDirectory();
+		closed = true;
 	}
 
 	private void deleteTempDirectory() {

@@ -14,6 +14,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import de.dereingerostete.sfs.StaticFileServerApplication;
 import de.dereingerostete.sfs.controller.DownloadController;
 import de.dereingerostete.sfs.error.RestError;
+import de.dereingerostete.sfs.util.FileDetailsUtils;
 import de.dereingerostete.sfs.util.RateLimiter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -58,7 +59,7 @@ public class UploadAPIController {
 		try {
 			if (multipartFile != null) {
 				String fileName = multipartFile.getOriginalFilename();
-				if (fileName == null || isIllegalFile(fileName)) return createIllegalFileResponse();
+				if (fileName == null || FileDetailsUtils.isIllegalFile(fileName)) return createIllegalFileResponse();
 				else if (isAlreadyUploaded(fileName)) return createFileExistsResponse();
 				LOGGER.info("Uploading whole file: " + fileName);
 
@@ -166,29 +167,6 @@ public class UploadAPIController {
 
 		if (AUTHENTICATOR.isValid(request, response)) return null;
 		else return AUTHENTICATOR.createUnauthorizedError("Unauthorized");
-	}
-
-	private boolean isIllegalFile(@NotNull String fileName) {
-		if (fileName.contains("..")) return true;
-		String[] illegalChars = {"/", "<", ">", ":", "\"", "\\", "|", "?", "*", "\0"};
-		for (String illegalChar : illegalChars) {
-			if (fileName.contains(illegalChar)) return true;
-		}
-
-		String uppercaseName = fileName.toUpperCase();
-		String[] illegalNames = {"CON", "PRN", "AUX", "NUL", "COM1", "COM2",
-				"COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1",
-				"LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"};
-		for (String illegalName : illegalNames) {
-			if (illegalName.equals(uppercaseName)) return true;
-		}
-
-		if (fileName.endsWith(".") || fileName.endsWith(" ") || fileName.startsWith(".")) return false;
-		for (char c : fileName.toCharArray()) {
-			if (c <= 31) return true;
-		}
-
-		return fileName.equalsIgnoreCase("desktop.ini");
 	}
 
 	private boolean isAlreadyUploaded(@NotNull String fileName) {

@@ -48,4 +48,27 @@ public class FileDetailsUtils {
 		return FileUtils.byteCountToDisplaySize(byteCount);
 	}
 
+	public static boolean isIllegalFile(@NotNull String fileName) {
+		if (fileName.contains("..")) return true;
+		String[] illegalChars = {"/", "<", ">", ":", "\"", "\\", "|", "?", "*", "\0"};
+		for (String illegalChar : illegalChars) {
+			if (fileName.contains(illegalChar)) return true;
+		}
+
+		String uppercaseName = fileName.toUpperCase();
+		String[] illegalNames = {"CON", "PRN", "AUX", "NUL", "COM1", "COM2",
+				"COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1",
+				"LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"};
+		for (String illegalName : illegalNames) {
+			if (illegalName.equals(uppercaseName)) return true;
+		}
+
+		if (fileName.endsWith(".") || fileName.endsWith(" ") || fileName.startsWith(".")) return false;
+		for (char c : fileName.toCharArray()) {
+			if (c <= 31) return true;
+		}
+
+		return fileName.equalsIgnoreCase("desktop.ini");
+	}
+
 }
